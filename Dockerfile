@@ -6,12 +6,20 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
+# Update Debian packages to security-patched versions
+RUN apt-get update \
+    && apt-get upgrade -y --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
 COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy application
 COPY app/ ./app/
 
+# Create non-root user
 RUN useradd --create-home appuser \
     && chown -R appuser:appuser /app
 
